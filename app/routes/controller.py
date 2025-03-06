@@ -7,7 +7,6 @@ from app.services.api_service import (
     wait_for_execution_to_complete_softskill,
     wait_for_execution_to_complete_hardskill,
     wait_for_execution_to_complete_feedback,
-    get_callback
 )
 from app.utils.utils import parse_questions, parse_feedback_response
 
@@ -52,9 +51,9 @@ def get_hardskills_questions(title: str = Query(...)):
 
 
 @router.get("/feedback")
-def get_newskills_feedback(score: int = Query(..., ge=0, le=8), title: str = Query(...)):
+def get_feedback(score: int = Query(..., ge=0, le=8), title: str = Query(...)):
     # O input_data agora é composto pela pontuação (score) e pelo título
-    input_data = {"input_data": f"pontuação {score}, {title}"}
+    input_data = {"input_data": f"{score}, {title}"}
     try:
         execution_id = create_execution_feedback(input_data)  # Usando a nova função de criação
         result = wait_for_execution_to_complete_feedback(execution_id)  # Aguardar a execução

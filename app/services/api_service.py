@@ -65,6 +65,10 @@ def wait_for_execution_to_complete_helper(url, execution_id, delay=15, max_retri
 def create_execution_hardskill(input_data):
     return create_execution_helper(CREATE_EXECUTION_URL_CLEANCODE, input_data)
 
+def get_callback(execution_id):
+    return get_callback_helper(CALLBACK_URL_TEMPLATE, execution_id)
+
+
 def wait_for_execution_to_complete_hardskill(execution_id, delay=15, max_retries=10):
     return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
 
@@ -72,6 +76,10 @@ def wait_for_execution_to_complete_hardskill(execution_id, delay=15, max_retries
 
 def create_execution_softskill(input_data):
     return create_execution_helper(CREATE_EXECUTION_URL, input_data)
+
+def get_callback(execution_id):
+    return get_callback_helper(CALLBACK_URL_TEMPLATE, execution_id)
+
 
 def wait_for_execution_to_complete_softskill(execution_id, delay=15, max_retries=10):
     return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
@@ -81,11 +89,9 @@ def wait_for_execution_to_complete_softskill(execution_id, delay=15, max_retries
 def create_execution_feedback(input_data):
     return create_execution_helper(CREATE_EXECUTION_URL_FEEDBACK, input_data)
 
-def wait_for_execution_to_complete_feedback(execution_id, delay=15, max_retries=10):
-    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
-
-#----------------------------------------------------------------
-
-
 def get_callback(execution_id):
     return get_callback_helper(CALLBACK_URL_TEMPLATE, execution_id)
+
+
+def wait_for_execution_to_complete_feedback(execution_id, delay=15, max_retries=10):
+    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
