@@ -1,14 +1,37 @@
 import re
 import json
 
-def parse_feedback_response(raw_text):
-    try:
-        response = json.loads(raw_text)
-    except json.JSONDecodeError:
-        print("Erro ao decodificar JSON:", raw_text)
-        return {}
+import re
 
-    return response.get("execution_id", "")
+def parse_feedback_response(raw_text):
+    """
+    Extrai e formata o feedback do texto retornado pela API.
+    """
+
+    feedback = {
+        "areas_para_melhorar": [],
+        "recomendacoes": [],
+        "motivacao": ""
+    }
+
+    # Dividindo o texto em seções
+    sections = raw_text.split("\n\n")
+
+    for section in sections:
+        # Captura as áreas para melhorar (numeradas)
+        match_melhoria = re.match(r"\d+\.\s\*\*(.+?)\*\*", section)
+        if match_melhoria:
+            feedback["areas_para_melhorar"].append(match_melhoria.group(1).strip())
+
+        # Captura as recomendações (itens com '- **' no início)
+        elif section.startswith("- **"):
+            feedback["recomendacoes"].append(section.strip("- "))
+
+        # Captura a motivação (após "### Motivação:")
+        elif "### Motivação:" in section:
+            feedback["motivacao"] = section.replace("### Motivação:", "").strip()
+
+    return feedback
 
 
 def parse_questions(raw_text):
