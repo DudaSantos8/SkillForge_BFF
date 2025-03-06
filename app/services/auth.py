@@ -12,5 +12,5 @@ def get_token():
 def refresh_token():
     """Executa o script Bash para obter um novo token e lê o resultado."""
     print("🔄 Token expirado! Renovando...")
-    subprocess.run(['C:\\PROGRA~1\\Git\\bin\\bash.exe', './scripts/get_token.sh'], check=True)
+    subprocess.run(['/bin/bash', './scripts/get_token.sh'], check=True)
     return get_token()
