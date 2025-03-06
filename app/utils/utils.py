@@ -1,55 +1,43 @@
 import re
 import json
 
-import re
-
 def parse_feedback_response(api_response):
-
     feedback = {
         "areas_para_melhorar": [],
         "recomendacoes": [],
         "motivacao": ""
     }
-
+    
     if not api_response.get("steps"):
         return feedback
-
-    # Extrai o texto da resposta dentro de "steps[0]['step_result']['answer']"
+    
     raw_text = api_response["steps"][0]["step_result"]["answer"]
-
-    # Divide o texto em linhas
     lines = raw_text.split("\n")
-
-    # Variáveis auxiliares
     current_section = None
-
+    
     for line in lines:
         line = line.strip()
-
-        # Detecta se é uma área para melhorar (numeradas)
+        
         match_melhoria = re.match(r"\d+\.\s\*\*(.+?)\*\*", line)
         if match_melhoria:
             feedback["areas_para_melhorar"].append(match_melhoria.group(1).strip())
             current_section = "areas_para_melhorar"
             continue
-
-        # Detecta se é uma recomendação (começa com número ou marcador "- **")
+        
         match_recommendation = re.match(r"-\s\*\*(.+?)\*\*", line)
         if match_recommendation:
             feedback["recomendacoes"].append(match_recommendation.group(1).strip())
             current_section = "recomendacoes"
             continue
-
-        # Detecta a motivação (após "Lembre-se de que a empatia...")
+        
         if "Lembre-se de que a empatia" in line or "Você já está no caminho certo" in line:
             feedback["motivacao"] += line + " "
             current_section = "motivacao"
             continue
-
-        # Se continuar na mesma seção, concatena o texto
+        
         if current_section and line:
             feedback[current_section][-1] += " " + line
-
+    
     return feedback
 
 def parse_questions(raw_text):
