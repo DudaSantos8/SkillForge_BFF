@@ -1,4 +1,15 @@
 import re
+import json
+
+def parse_feedback_response(raw_text):
+    try:
+        response = json.loads(raw_text)
+    except json.JSONDecodeError:
+        print("Erro ao decodificar JSON:", raw_text)
+        return {}
+
+    return response.get("execution_id", "")
+
 
 def parse_questions(raw_text):
     """
@@ -39,46 +50,3 @@ def parse_questions(raw_text):
             })
 
     return questions
-
-
-def parse_feedback_response(response):
-    """
-    Função para formatar a resposta da API de feedback de forma adequada para o frontend.
-
-    Args:
-        response (dict): Resposta da API contendo o feedback.
-
-    Returns:
-        dict: Dados formatados para o frontend.
-    """
-    # Extrair dados relevantes da resposta
-    execution_id = response.get("execution_id", "")
-    conversation_id = response.get("conversation_id", "")
-    progress = response.get("progress", {})
-    steps = response.get("steps", [])
-    
-    # Processar a pontuação e feedback
-    feedback = ""
-    if steps:
-        feedback_step = next((step for step in steps if step.get("step_name") == "feedback"), {})
-        step_result = feedback_step.get("step_result", {})
-        feedback = step_result.get("answer", "")
-
-    # Extração do tempo de execução
-    start_time = progress.get("start", "")
-    end_time = progress.get("end", "")
-    duration = progress.get("duration", 0)
-
-    # Construção do formato de resposta para o frontend
-    formatted_feedback = {
-        "execution_id": execution_id,
-        "conversation_id": conversation_id,
-        "feedback": feedback,
-        "start_time": start_time,
-        "end_time": end_time,
-        "duration": duration,
-        "execution_percentage": progress.get("execution_percentage", 0),
-        "status": progress.get("status", ""),
-    }
-    
-    return formatted_feedback
