@@ -1,19 +1,26 @@
 import re
 
-def parse_feedback_response(api_response):
-    feedback = {
-        "areas_para_melhorar": [],
-        "recomendacoes": [],
-        "motivacao": ""
+def parse_feedback_response(raw_text: str):
+    """
+    Processa a resposta bruta do feedback e retorna um dicionário estruturado.
+    """
+    # Extrai a pontuação e o título
+    score_match = re.search(r"\*\*Pontuação: (\d+) - (.*?)\*\*", raw_text)
+    score = int(score_match.group(1)) if score_match else None
+    title = score_match.group(2) if score_match else ""
+    
+    # Remove a parte inicial do texto (Pontuação e título)
+    processed_text = raw_text.split("\n\n", 1)[1] if "\n\n" in raw_text else raw_text
+    
+    # Separa as seções por parágrafos
+    paragraphs = [p.strip() for p in processed_text.split("\n\n") if p.strip()]
+    
+    return {
+        "score": score,
+        "title": title,
+        "feedback_summary": paragraphs[0] if paragraphs else "",
+        "detailed_feedback": paragraphs[1:] if len(paragraphs) > 1 else []
     }
-    
-    if not api_response.get("steps"):
-        return feedback
-    
-    raw_text = api_response["steps"][0]["step_result"]["answer"]
-    feedback = parse_questions(raw_text)
-    
-    return feedback
 
 def parse_questions(raw_text):
     """
