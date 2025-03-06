@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import questionarios
+from app.routes import controller
 
 app = FastAPI()
 
@@ -14,4 +14,4 @@ app.add_middleware(
 )
 
 # Inclui as rotas da aplicação
-app.include_router(questionarios.router)
+app.include_router(controller.router)
