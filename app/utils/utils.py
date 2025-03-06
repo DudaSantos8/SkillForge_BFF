@@ -1,5 +1,4 @@
 import re
-import json
 
 def parse_feedback_response(api_response):
     feedback = {
@@ -12,31 +11,7 @@ def parse_feedback_response(api_response):
         return feedback
     
     raw_text = api_response["steps"][0]["step_result"]["answer"]
-    lines = raw_text.split("\n")
-    current_section = None
-    
-    for line in lines:
-        line = line.strip()
-        
-        match_melhoria = re.match(r"\d+\.\s\*\*(.+?)\*\*", line)
-        if match_melhoria:
-            feedback["areas_para_melhorar"].append(match_melhoria.group(1).strip())
-            current_section = "areas_para_melhorar"
-            continue
-        
-        match_recommendation = re.match(r"-\s\*\*(.+?)\*\*", line)
-        if match_recommendation:
-            feedback["recomendacoes"].append(match_recommendation.group(1).strip())
-            current_section = "recomendacoes"
-            continue
-        
-        if "Lembre-se de que a empatia" in line or "Você já está no caminho certo" in line:
-            feedback["motivacao"] += line + " "
-            current_section = "motivacao"
-            continue
-        
-        if current_section and line:
-            feedback[current_section][-1] += " " + line
+    feedback = parse_questions(raw_text)
     
     return feedback
 
