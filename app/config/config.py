@@ -8,3 +8,5 @@ CREATE_EXECUTION_URL = "https://genai-code-buddy-api.stackspot.com/v1/quick-comm
 CALLBACK_URL_TEMPLATE = "https://genai-code-buddy-api.stackspot.com/v1/quick-commands/callback/{execution_id}"
 
 CREATE_EXECUTION_URL_CLEANCODE = "https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution/cleancode"
+
+CREATE_EXECUTION_URL_FEEDBACK = "https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution/feedbacksoft"

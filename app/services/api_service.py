@@ -2,7 +2,7 @@ import time
 import requests
 from fastapi import HTTPException
 from app.services.auth import get_token, refresh_token
-from app.config.config import CREATE_EXECUTION_URL, CALLBACK_URL_TEMPLATE, CREATE_EXECUTION_URL_CLEANCODE
+from app.config.config import CREATE_EXECUTION_URL, CALLBACK_URL_TEMPLATE, CREATE_EXECUTION_URL_CLEANCODE, CREATE_EXECUTION_URL_FEEDBACK
 
 # Função genérica para criar execução
 def create_execution_helper(url, input_data):
@@ -61,23 +61,31 @@ def wait_for_execution_to_complete_helper(url, execution_id, delay=15, max_retri
     
     raise HTTPException(status_code=500, detail="Número máximo de tentativas atingido.")
 
-#--------------------------- CLEAN CODE -----------------------------------
-def create_execution_cleancode(input_data):
+#--------------------------- HARD SKILLS -----------------------------------
+def create_execution_hardskill(input_data):
     return create_execution_helper(CREATE_EXECUTION_URL_CLEANCODE, input_data)
 
-def get_callback_cleancode(execution_id):
-    return get_callback_helper(CALLBACK_URL_TEMPLATE, execution_id)
-
-def wait_for_execution_to_complete_cleancode(execution_id, delay=15, max_retries=10):
+def wait_for_execution_to_complete_hardskill(execution_id, delay=15, max_retries=10):
     return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
 
-#--------------------------- EXECUÇÃO NORMAL ----------------------------
+#--------------------------- SOFT SKILLS ----------------------------
 
-def create_execution(input_data):
+def create_execution_softskill(input_data):
     return create_execution_helper(CREATE_EXECUTION_URL, input_data)
+
+def wait_for_execution_to_complete_softskill(execution_id, delay=15, max_retries=10):
+    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
+
+#--------------------------- FEEDBACK ----------------------------
+
+def create_execution_feedback(input_data):
+    return create_execution_helper(CREATE_EXECUTION_URL_FEEDBACK, input_data)
+
+def wait_for_execution_to_complete_feedback(execution_id, delay=15, max_retries=10):
+    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
+
+#----------------------------------------------------------------
+
 
 def get_callback(execution_id):
     return get_callback_helper(CALLBACK_URL_TEMPLATE, execution_id)
-
-def wait_for_execution_to_complete(execution_id, delay=15, max_retries=10):
-    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
