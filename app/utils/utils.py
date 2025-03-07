@@ -1,19 +1,34 @@
 import re
+import json
 
 def parse_feedback_response(raw_text: str):
     """
     Processa a resposta bruta do feedback e retorna um dicionário estruturado.
+    Agora lida com o formato JSON e extraí as informações necessárias.
     """
-    # Extrai a pontuação e o título
-    score_match = re.search(r"\*\*Pontuação: (\d+) - (.*?)\*\*", raw_text)
+    # Converte a string JSON para um dicionário Python
+    try:
+        response_data = json.loads(raw_text)
+    except json.JSONDecodeError:
+        return {"error": "Invalid JSON format"}
+    
+    # Extrai a resposta do feedback da estrutura JSON
+    feedback_text = ""
+    for step in response_data.get("steps", []):
+        if step.get("step_name") == "feedback":
+            feedback_text = step["step_result"].get("answer", "")
+            break
+    
+    # Extrai a pontuação e o título usando regex
+    score_match = re.search(r"(\d+)\s*em\s*uma\s*escala.*?\"(.*?)\".*", feedback_text)
     score = int(score_match.group(1)) if score_match else None
     title = score_match.group(2) if score_match else ""
     
     # Remove a parte inicial do texto (Pontuação e título)
-    processed_text = raw_text.split("\n\n", 1)[1] if "\n\n" in raw_text else raw_text
+    processed_text = feedback_text.replace(f"Com base na pontuação de {score} em uma escala", "") if score else feedback_text
     
     # Separa as seções por parágrafos
-    paragraphs = [p.strip() for p in processed_text.split("\n\n") if p.strip()]
+    paragraphs = [p.strip() for p in processed_text.split(".") if p.strip()]
     
     return {
         "score": score,
@@ -21,6 +36,7 @@ def parse_feedback_response(raw_text: str):
         "feedback_summary": paragraphs[0] if paragraphs else "",
         "detailed_feedback": paragraphs[1:] if len(paragraphs) > 1 else []
     }
+
 
 def parse_questions(raw_text):
     """
