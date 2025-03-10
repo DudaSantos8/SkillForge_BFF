@@ -33,17 +33,18 @@ async def create_user(user_data: UserCreate):
     if user_data.password != user_data.confirmPassword:
         raise HTTPException(status_code=400, detail="Senha e confirmação não coincidem.")
     
+    # Log para conferir os dados antes de enviar para a API Java
+    print("Dados enviados para a API Java:", user_data.dict())
+    
     # Envia os dados para a API Java
     async with httpx.AsyncClient() as client:
-        response = await client.post(f"{API_JAVA_URL}/users", json=user_data)
+        response = await client.post(f"{API_JAVA_URL}/users", json=user_data.dict())
         
         # Verifica a resposta da API Java
         if response.status_code == 400:
-            # Aqui você pode detalhar mais o erro se necessário
             error_message = response.json().get("message", "Erro ao criar o usuário.")
             raise HTTPException(status_code=400, detail=error_message)
         
-        # Se tudo correr bem, retorne os dados ou o status de sucesso
         return response.json()  # Retorna a resposta da API Java
 
 # 🔹 Rota para atualizar um usuário
