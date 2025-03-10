@@ -50,7 +50,7 @@ async def create_user(user_data: UserCreate):
 async def login(user_data: UserLogin):
     # Envia as credenciais para a API Java para verificação
     async with httpx.AsyncClient() as client:
-        response = await client.post(f"{API_JAVA_URL}/users/login", json=user_data.dict())
+        response = await client.post(f"{API_JAVA_URL}/login", json=user_data.dict())
         
         if response.status_code != 200:
             raise HTTPException(status_code=401, detail="Credenciais inválidas")
