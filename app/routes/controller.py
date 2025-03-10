@@ -52,7 +52,7 @@ async def login(user_data: UserLogin):
     async with httpx.AsyncClient() as client:
         response = await client.post(f"{API_JAVA_URL}/login", json=user_data.dict())
         
-        if response.status_code != 200:
+        if response.status_code != 201:
             raise HTTPException(status_code=401, detail="Credenciais inválidas")
         
         # Supondo que a resposta seja {"id": 2, "email": "teste@gmail.com", "password": null}
