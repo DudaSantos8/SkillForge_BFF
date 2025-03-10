@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, Query, HTTPException
 from pydantic import BaseModel
+from mangum import Mangum
 import httpx
 
 from app.services.api_service import (
