@@ -35,7 +35,7 @@ async def create_user(user_data: UserCreate):
     
     # Envia os dados para a API Java
     async with httpx.AsyncClient() as client:
-        response = await client.post(f"{API_JAVA_URL}/users", json=user_data.dict())
+        response = await client.post(f"{API_JAVA_URL}/users", json=user_data)
         
         # Verifica a resposta da API Java
         if response.status_code == 400:
