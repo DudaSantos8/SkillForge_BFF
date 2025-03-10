@@ -26,6 +26,7 @@ class UserCreate(BaseModel):
     confirmPassword: str
 
 # 🔹 Rota para criar um usuário
+# 🔹 Rota para criar um usuário
 @router.post("/users")
 async def create_user(user_data: UserCreate):
     # Verifica se a senha e a confirmação são iguais
@@ -38,39 +39,41 @@ async def create_user(user_data: UserCreate):
         
         # Verifica a resposta da API Java
         if response.status_code == 400:
-            raise HTTPException(status_code=400, detail="Erro ao criar o usuário na API Java.")
+            # Aqui você pode detalhar mais o erro se necessário
+            error_message = response.json().get("message", "Erro ao criar o usuário.")
+            raise HTTPException(status_code=400, detail=error_message)
         
-        return response.json()
+        # Se tudo correr bem, retorne os dados ou o status de sucesso
+        return response.json()  # Retorna a resposta da API Java
 
 # 🔹 Rota para atualizar um usuário
 @router.put("/users/{user_id}")
 async def update_user(user_id: int, user_data: dict):
     async with httpx.AsyncClient() as client:
-        response = await client.put(f"{API_JAVA_URL}/{user_id}", json=user_data)
-        return response.json()
-
-# 🔹 Rota para listar todos os usuários
-@router.get("/users")
-async def list_users():
-    async with httpx.AsyncClient() as client:
-        response = await client.get(API_JAVA_URL)
-        return response.json()
-
-# 🔹 Rota para obter um usuário por ID
-@router.get("/users/{user_id}")
-async def get_user(user_id: int):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"{API_JAVA_URL}/{user_id}")
-        return response.json()
+        response = await client.put(f"{API_JAVA_URL}/users/{user_id}", json=user_data)
+        
+        if response.status_code == 200:
+            return response.json()  # Retorna os dados atualizados
+        elif response.status_code == 404:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        else:
+            error_message = response.json().get("message", "Erro ao atualizar o usuário.")
+            raise HTTPException(status_code=response.status_code, detail=error_message)
 
 # 🔹 Rota para deletar um usuário
 @router.delete("/users/{user_id}")
 async def delete_user(user_id: int):
     async with httpx.AsyncClient() as client:
-        response = await client.delete(f"{API_JAVA_URL}/{user_id}")
+        response = await client.delete(f"{API_JAVA_URL}/users/{user_id}")
+        
         if response.status_code == 204:
             return {"message": "Usuário deletado com sucesso"}
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        elif response.status_code == 404:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        else:
+            error_message = response.json().get("message", "Erro ao deletar o usuário.")
+            raise HTTPException(status_code=response.status_code, detail=error_message)
+
 
 # 🔹 Rota para obter perguntas de soft skills
 @router.get("/softskills/questions")
