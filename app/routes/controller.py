@@ -15,7 +15,7 @@ from app.utils.utils import parse_questions, parse_feedback_response
 app = FastAPI()
 router = APIRouter()
 
-API_JAVA_URL = "http://localhost:8080/users"  # URL da API Java
+API_JAVA_URL = "http://56.124.88.224:8080/"  # URL da API Java
 
 # 🔹 Rota para criar um usuário
 @router.post("/users")
