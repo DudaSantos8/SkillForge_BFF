@@ -1,8 +1,6 @@
 from fastapi import FastAPI, APIRouter, Query, HTTPException
-from mangum import Mangum
-from pydantic import BaseModel, EmailStr
-
-import httpx    
+from pydantic import BaseModel
+import httpx
 
 from app.services.api_service import (
     create_execution_softskill,
@@ -24,7 +22,11 @@ class UserCreate(BaseModel):
     email: str
     password: str
     confirmPassword: str
-# 🔹 Rota para criar um usuário
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
 # 🔹 Rota para criar um usuário
 @router.post("/users")
 async def create_user(user_data: UserCreate):
@@ -32,19 +34,35 @@ async def create_user(user_data: UserCreate):
     if user_data.password != user_data.confirmPassword:
         raise HTTPException(status_code=400, detail="Senha e confirmação não coincidem.")
     
-    # Log para conferir os dados antes de enviar para a API Java
-    print("Dados enviados para a API Java:", user_data.dict())
-    
     # Envia os dados para a API Java
     async with httpx.AsyncClient() as client:
         response = await client.post(f"{API_JAVA_URL}/users", json=user_data.dict())
         
-        # Verifica a resposta da API Java
         if response.status_code == 400:
             error_message = response.json().get("message", "Erro ao criar o usuário.")
             raise HTTPException(status_code=400, detail=error_message)
         
-        return response.json()  # Retorna a resposta da API Java
+        return response.json()
+
+# 🔹 Rota para login do usuário
+@router.post("/login")
+async def login(user_data: UserLogin):
+    # Envia as credenciais para a API Java para verificação
+    async with httpx.AsyncClient() as client:
+        response = await client.post(f"{API_JAVA_URL}/users/login", json=user_data.dict())
+        
+        if response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Credenciais inválidas")
+        
+        # Supondo que a resposta seja {"id": 2, "email": "teste@gmail.com", "password": null}
+        user_from_db = response.json()
+        
+        # Verifica se o email e o id estão presentes na resposta
+        if "id" not in user_from_db or "email" not in user_from_db:
+            raise HTTPException(status_code=401, detail="Erro ao autenticar o usuário")
+        
+        # Retorna o id e o email para o frontend
+        return {"id": user_from_db["id"], "email": user_from_db["email"]}
 
 # 🔹 Rota para atualizar um usuário
 @router.put("/users/{user_id}")
@@ -73,7 +91,6 @@ async def delete_user(user_id: int):
         else:
             error_message = response.json().get("message", "Erro ao deletar o usuário.")
             raise HTTPException(status_code=response.status_code, detail=error_message)
-
 
 # 🔹 Rota para obter perguntas de soft skills
 @router.get("/softskills/questions")
