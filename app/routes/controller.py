@@ -1,5 +1,7 @@
 from fastapi import FastAPI, APIRouter, Query, HTTPException
 from mangum import Mangum
+from pydantic import BaseModel, EmailStr
+
 import httpx    
 
 from app.services.api_service import (
@@ -17,13 +19,27 @@ router = APIRouter()
 
 API_JAVA_URL = "http://56.124.88.224:8080/"  # URL da API Java
 
+# Definindo um modelo de dados para o usuário
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    confirmPassword: str
+
 # 🔹 Rota para criar um usuário
 @router.post("/users")
-async def create_user(user_data: dict):
+async def create_user(user_data: UserCreate):
+    # Verifica se a senha e a confirmação são iguais
+    if user_data.password != user_data.confirmPassword:
+        raise HTTPException(status_code=400, detail="Senha e confirmação não coincidem.")
+    
+    # Envia os dados para a API Java
     async with httpx.AsyncClient() as client:
-        response = await client.post(API_JAVA_URL, json=user_data)
+        response = await client.post(f"{API_JAVA_URL}/users", json=user_data.dict())
+        
+        # Verifica a resposta da API Java
         if response.status_code == 400:
-            raise HTTPException(status_code=400, detail="Senha e confirmação não coincidem.")
+            raise HTTPException(status_code=400, detail="Erro ao criar o usuário na API Java.")
+        
         return response.json()
 
 # 🔹 Rota para atualizar um usuário
