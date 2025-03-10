@@ -21,10 +21,9 @@ API_JAVA_URL = "http://56.124.88.224:8080/"  # URL da API Java
 
 # Definindo um modelo de dados para o usuário
 class UserCreate(BaseModel):
-    email: EmailStr
+    email: str
     password: str
     confirmPassword: str
-
 # 🔹 Rota para criar um usuário
 # 🔹 Rota para criar um usuário
 @router.post("/users")
