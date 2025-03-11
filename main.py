@@ -4,10 +4,9 @@ from app.routes import controller
 
 app = FastAPI()
 
-# Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://newscreens.d1svubromz6zbm.amplifyapp.com"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
