@@ -11,7 +11,7 @@ from app.services.api_service import (
     wait_for_execution_to_complete_hardskill,
     wait_for_execution_to_complete_feedback,
 )
-from app.utils.utils import parse_questions, parse_feedback_response
+from app.utils.utils import parse_questions,parse_questions_hardskills, parse_feedback_response
 
 app = FastAPI()
 router = APIRouter()
@@ -128,7 +128,7 @@ def get_hardskills_questions(title: str = Query(...)):
     if not raw_text:
         raise HTTPException(status_code=500, detail="Não foi possível obter perguntas.")
 
-    formatted_questions = parse_questions(raw_text)
+    formatted_questions = parse_questions_hardskills(raw_text)
     return {"questions": formatted_questions}
 
 # 🔹 Rota para obter feedback
