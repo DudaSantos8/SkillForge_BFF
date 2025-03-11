@@ -2,7 +2,7 @@ import time
 import requests
 from fastapi import HTTPException
 from app.services.auth import get_token, refresh_token
-from app.config.config import CREATE_EXECUTION_URL, CALLBACK_URL_TEMPLATE, CREATE_EXECUTION_URL_CLEANCODE, CREATE_EXECUTION_URL_FEEDBACK
+from app.config.config import CREATE_EXECUTION_URL, CALLBACK_URL_TEMPLATE, CREATE_EXECUTION_URL_CLEANCODE, CALLBACK_URL_TEMPLATE_CLEANCODE, CREATE_EXECUTION_URL_FEEDBACK, CALLBACK_URL_TEMPLATE_FEEDBACK
 
 # Função genérica para criar execução
 def create_execution_helper(url, input_data):
@@ -66,11 +66,11 @@ def create_execution_hardskill(input_data):
     return create_execution_helper(CREATE_EXECUTION_URL_CLEANCODE, input_data)
 
 def get_callback(execution_id):
-    return get_callback_helper(CALLBACK_URL_TEMPLATE, execution_id)
+    return get_callback_helper(CALLBACK_URL_TEMPLATE_CLEANCODE, execution_id)
 
 
 def wait_for_execution_to_complete_hardskill(execution_id, delay=15, max_retries=10):
-    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
+    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE_CLEANCODE, execution_id, delay, max_retries)
 
 #--------------------------- SOFT SKILLS ----------------------------
 
@@ -90,8 +90,8 @@ def create_execution_feedback(input_data):
     return create_execution_helper(CREATE_EXECUTION_URL_FEEDBACK, input_data)
 
 def get_callback(execution_id):
-    return get_callback_helper(CALLBACK_URL_TEMPLATE, execution_id)
+    return get_callback_helper(CALLBACK_URL_TEMPLATE_FEEDBACK, execution_id)
 
 
 def wait_for_execution_to_complete_feedback(execution_id, delay=15, max_retries=10):
-    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE, execution_id, delay, max_retries)
+    return wait_for_execution_to_complete_helper(CALLBACK_URL_TEMPLATE_FEEDBACK, execution_id, delay, max_retries)
